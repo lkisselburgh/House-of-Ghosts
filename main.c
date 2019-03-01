@@ -1,20 +1,19 @@
 /*
  *    Name: Lacey Kisselburgh E-mail: lkiss001@ucr.edu
- *    Partner's Name: Arturo Perez E-mail: apere129@ucr.edu
  *    Lab Section: 022
- *    Lab # 9  Exercise # 3 
- *    Exercise Description: This program plays short a song
- *	 
+ *    Custom Lab Project
+ *    Project Description: This is a game where the player enters a house full of enemies and trick rooms
+ *						   The game is played using a Nokia 5110 LCD screen, analog stick, and buttons
  *    I acknowledge all content contained herein, excluding template or example
  *    code, is my own original work.
  */
 
 #include <avr/io.h>
 #include "io.c"
-unsigned char play_song = 1;
 #include "pwm.h"
 #include "start_menu.h"
 #include "timer.h"
+#include "game.h"
 
 /*
 typedef struct Tasks {
@@ -50,11 +49,13 @@ int main(void)
 	
 	unsigned long song_elapsedTime = 25;
 	unsigned long menu_elapsedTime = 100;
+	unsigned long game_elapsedTime = 250;
 	const unsigned long timerPeriod = 25;
 	
     TimerSet(timerPeriod);
     TimerOn();
     PWM_on();
+	srand(time(NULL));
     
     while(1)
     { 
@@ -62,9 +63,17 @@ int main(void)
 			SongTick();
 			song_elapsedTime = 0;
 		}
-		if (menu_elapsedTime >= 100) {
-			MenuTick();
-			menu_elapsedTime = 0;
+		if (!game_running) {
+			if (menu_elapsedTime >= 100) {
+				MenuTick();
+				menu_elapsedTime = 0;
+			}
+		}
+		if (game_running) {
+			if (game_elapsedTime >= 250) {
+				GameTick();
+				game_elapsedTime = 0;
+			}
 		}
 		/*
 		for (x = 0; x < tasksNum; ++x) 
@@ -80,7 +89,9 @@ int main(void)
         while(!TimerFlag); 
         TimerFlag = 0;
 		song_elapsedTime += timerPeriod;
-		menu_elapsedTime += timerPeriod;
+		if (!game_running) { menu_elapsedTime += timerPeriod; }
+		if (game_running) { game_elapsedTime += timerPeriod; }
+		PORTB = p_output | g_output;
     }
 	//return 0;
 }

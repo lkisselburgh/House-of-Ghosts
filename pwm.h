@@ -85,6 +85,7 @@ unsigned short piano_0b[256] = {
 unsigned char pl, it1, it0 = 0;
 unsigned short A1, B1, A0, B0 = 0;
 unsigned char tmpA=0x00;
+unsigned char p_output;
 enum Song{song_start, off, play} song_state;
 void SongTick ()
 {
@@ -126,13 +127,13 @@ void SongTick ()
 		//if (it1 < 2) {
 		if (A1 <= 255) {
 			set_PWM(piano_1a[A1]);
-			//PORTB = A1;
+			p_output = A1;
 			++A1;
 			break;
 		}
 		else if (B1 <= 255) {
 			set_PWM(piano_1b[B1]);
-			//PORTB = B1;
+			p_output = B1;
 			++B1;
 			break;
 		}
@@ -143,13 +144,13 @@ void SongTick ()
 		//else if (it0 < 2) {
 		else if (A0 <= 255) {
 			set_PWM(piano_0a[A0]);
-			//PORTB = A0;
+			p_output = A0;
 			++A0;
 			break;
 		}
 		else if (B0 <= 255) {
 			set_PWM(piano_0b[B0]);
-			//PORTB = B0;
+			p_output = B0;
 			++B0;
 			break;
 		}
@@ -159,9 +160,8 @@ void SongTick ()
 		//}
 		else {
 			set_PWM(piano_loop[pl]);
-			//PORTB=pl;
-			if (pl == 64) { pl = 0; }
-			else { pl++; }
+			if (pl == 64) { pl = 0; p_output = pl; }
+			else { pl++; p_output = pl; }
 			break;
 		}
 		
